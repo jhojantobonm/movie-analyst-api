@@ -12,6 +12,38 @@ async function main () {
     })
     pool.query = util.promisify(pool.query)
 
+
+    // create publications table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS publications (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(255),
+          avatar VARCHAR(255)
+      );
+    `);
+
+    // create reviewers table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS reviewers (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255),
+        publication VARCHAR(255),
+        avatar VARCHAR(255)
+      );
+    `);
+        
+    // create reviewers table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS movies (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          title VARCHAR(255),
+          release_year INT,
+          score INT,
+          reviewer VARCHAR(255),
+          publication VARCHAR(255)
+      );
+    `);
+    
     const publicationsQuery = 'INSERT INTO publications (name, avatar) VALUES ?'
     const publicationsValues = [
       ['The Daily Reviewer', 'glyphicon-eye-open'],
