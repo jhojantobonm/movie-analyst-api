@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 const mysql = require('mysql')
 const util = require('util')
+const os = require("os");
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -63,7 +64,10 @@ app.get('/pending', async function (req, res) {
 })
 
 app.get('/', function (req, res) {
-  res.status(200).send({'service_status': 'Up'})
+  res.status(200).send({
+    service_status: "Up",
+    hostname: os.hostname(),
+  });
 })
 
 console.log('server listening through port: ' + process.env.PORT)
