@@ -64,7 +64,7 @@ app.get('/pending', async function (req, res) {
 })
 
 app.get('/', function (req, res) {
-  res.status(200).send({
+  res.status(200).json({
     service_status: "Up",
     hostname: os.hostname(),
   });
