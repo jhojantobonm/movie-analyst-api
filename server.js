@@ -5,12 +5,47 @@ const mysql = require('mysql')
 const util = require('util')
 const os = require("os");
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'applicationuser',
-  password: process.env.DB_PASS || 'applicationuser',
-  database: process.env.DB_NAME || 'movie_db'
-})
+console.log(process.env.AWS_REGION);
+console.log(process.env.DB_SECRET_NAME);
+
+let pool;
+
+const {
+  SecretsManagerClient,
+  GetSecretValueCommand,
+} = require("@aws-sdk/client-secrets-manager");
+
+const aws_client = new SecretsManagerClient({
+  region: process.env.AWS_REGION || "us-east-1",
+});
+
+const response = async ()=>{ 
+  return await client.send(
+    new GetSecretValueCommand({
+      SecretId: process.env.DB_SECRET_NAME,
+    })
+  );
+}
+
+const secret = JSON.parse(response.SecretString);
+
+
+pool = mysql.createPool({
+  database: secret.db_name,
+  host: secret.db_host,
+  port: secret.db_port,
+  user: secret.db_username,
+  password: secret.db_password,
+});
+
+// const pool = mysql.createPool({
+//   host: process.env.DB_HOST || 'localhost',
+//   user: process.env.DB_USER || 'applicationuser',
+//   password: process.env.DB_PASS || 'applicationuser',
+//   database: process.env.DB_NAME || 'movie_db'
+// })
+
+
 pool.query = util.promisify(pool.query)
 
 // Implement the movies API endpoint
